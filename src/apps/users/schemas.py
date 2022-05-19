@@ -27,6 +27,9 @@ class UserUpdateInputSchema(BaseModel):
     birthday: dt.date
 
 
-class UserOutputSchema(BaseModel):
+class UserOutputSchema(UserBaseSchema):
     id: UUID
-    is_active: bool = True
+    is_active: bool
+
+    class Config:
+        orm_mode = True
