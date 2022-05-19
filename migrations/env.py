@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.settings.database import DatabaseSettings
+from src.settings import settings
 
 from src.apps.users.models import User
 from src.database.connection import Base
@@ -15,7 +15,7 @@ from src.database.connection import Base
 config = context.config
 
 
-config.set_main_option("sqlalchemy.url", DatabaseSettings.postgres_url)
+config.set_main_option("sqlalchemy.url", settings.postgres_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

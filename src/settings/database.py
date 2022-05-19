@@ -19,6 +19,6 @@ class DatabaseSettings(BaseSettings):
         database_name = self.POSTGRES_DATABASE if not self.TEST_MODE else "test"
 
         return (
-            f"postgres://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
+            f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
             f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{database_name}"
         )
