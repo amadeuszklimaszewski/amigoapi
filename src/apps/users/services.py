@@ -35,3 +35,10 @@ class UserService:
         db.commit()
         db.refresh(new_user)
         return UserOutputSchema.from_orm(new_user)
+
+    @classmethod
+    def authenticate(cls, email: str, password: str, db: Session) -> User:
+        user = db.query(User).filter_by(email=email).first()
+        if user is None or not pwd_context.verify(password, user.password):
+            raise Exception
+        return user
