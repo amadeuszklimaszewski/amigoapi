@@ -1,9 +1,5 @@
 from typing import Any
-from wsgiref.util import setup_testing_defaults
-from fastapi import status
-import sqlalchemy
 from sqlalchemy.orm import Session
-from fastapi.exceptions import HTTPException
 
 from src.apps.users.models import User
 from src.apps.users.schemas import UserOutputSchema, UserRegisterSchema
