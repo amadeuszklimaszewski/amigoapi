@@ -102,8 +102,5 @@ def update_user(
     service: UserService = Depends(),
     db: Session = Depends(get_db),
 ):
-    print(user)
-    print(update_schema)
     updated_user = service.update_user(user=user, schema=update_schema, db=db)
-    print(updated_user)
     return UserOutputSchema.from_orm(updated_user)
