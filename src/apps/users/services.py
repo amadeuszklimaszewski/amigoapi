@@ -39,6 +39,7 @@ class UserService:
             raise AlreadyExists("Username already taken!")
 
         new_user = User(**user_data)
+        new_user.is_active = True
 
         db.add(new_user)
         db.commit()

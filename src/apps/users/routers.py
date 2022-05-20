@@ -20,11 +20,6 @@ from src.dependencies.users import authenticate_user
 user_router = APIRouter(prefix="/users")
 
 
-# @user_router.get("/")
-# def root():
-#     return {"Users": "users"}
-
-
 @user_router.post(
     "/register",
     tags=["users"],
