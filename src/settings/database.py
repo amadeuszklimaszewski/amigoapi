@@ -10,9 +10,6 @@ class DatabaseSettings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_PORT: int
     TEST_MODE: bool = False
-    APP_MODELS: dict[str, Any] = {
-        "users": ["src.apps.user.models"],
-    }
 
     @property
     def postgres_url(self) -> str:
