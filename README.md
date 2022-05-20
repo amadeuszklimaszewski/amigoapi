@@ -3,8 +3,8 @@ A FastAPI culinary recipes website created for learning purposes.
 
 ## Functionality
 * SwaggerUI docs available at `localhost:8000/docs`.
-* Implemented authentication and authorization using JWT
-* 
+* Users can register, login and update profile.
+* Implemented authentication and authorization using JWT.
 
 ## Tech stack
 * FastAPI 0.78.0
@@ -16,4 +16,4 @@ A FastAPI culinary recipes website created for learning purposes.
 * Products routers
 * Reviews routers
 * CRUD for products and reviews
-* Testing
+* Tests
