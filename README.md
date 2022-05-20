@@ -12,8 +12,8 @@ A FastAPI culinary recipes website created for learning purposes.
 * Docker
 * PostgreSQL
 
-## TO DO
-* Products routers
-* Reviews routers
+## TODOs
+* Products routers, services
+* Reviews routers, schemas, services
 * CRUD for products and reviews
 * Tests
