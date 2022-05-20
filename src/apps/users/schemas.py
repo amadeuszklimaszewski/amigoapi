@@ -21,10 +21,10 @@ class UserRegisterSchema(UserBaseSchema):
     password2: str
 
 
-class UserUpdateInputSchema(BaseModel):
+class UserUpdateSchema(BaseModel):
     first_name: str
     last_name: str
-    birthday: dt.date
+    email: str
 
 
 class UserOutputSchema(UserBaseSchema):

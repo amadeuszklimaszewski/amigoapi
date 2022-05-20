@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status, Request
-from fastapi.responses import PlainTextResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from src.apps.users.routers import user_router

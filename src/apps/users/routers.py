@@ -6,7 +6,12 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 from src.apps.users.models import User
 
-from src.apps.users.schemas import UserLoginSchema, UserOutputSchema, UserRegisterSchema
+from src.apps.users.schemas import (
+    UserLoginSchema,
+    UserOutputSchema,
+    UserRegisterSchema,
+    UserUpdateSchema,
+)
 from src.apps.users.services import UserService
 from src.apps.jwt.schemas import TokenSchema
 from src.database.connection import get_db
@@ -83,3 +88,22 @@ def get_logged_user(
 )
 def get_user(user_id: UUID, db: Session = Depends(get_db)) -> UserOutputSchema:
     return UserOutputSchema.from_orm(db.query(User).filter_by(id=user_id).first())
+
+
+@user_router.put(
+    "/profile",
+    tags=["users"],
+    status_code=status.HTTP_200_OK,
+    response_model=UserOutputSchema,
+)
+def update_user(
+    update_schema: UserUpdateSchema,
+    user: User = Depends(authenticate_user),
+    service: UserService = Depends(),
+    db: Session = Depends(get_db),
+):
+    print(user)
+    print(update_schema)
+    updated_user = service.update_user(user=user, schema=update_schema, db=db)
+    print(updated_user)
+    return UserOutputSchema.from_orm(updated_user)

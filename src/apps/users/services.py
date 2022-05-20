@@ -1,12 +1,16 @@
 from typing import Any
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from src.apps.users.models import User
-from src.apps.users.schemas import UserOutputSchema, UserRegisterSchema
+from src.apps.users.schemas import (
+    UserOutputSchema,
+    UserRegisterSchema,
+    UserUpdateSchema,
+)
 from src.apps.users.utils import pwd_context
 from src.core.exceptions import (
     AlreadyExists,
-    AuthError,
     InvalidJWTUser,
     PasswordMismatch,
 )
@@ -47,3 +51,15 @@ class UserService:
         if user is None or not pwd_context.verify(password, user.password):
             raise InvalidJWTUser("No matches with given token")
         return user
+
+    @classmethod
+    def update_user(cls, user: User, schema: UserUpdateSchema, db: Session) -> User:
+        update_data = schema.dict()
+
+        db.execute(
+            update(User)
+            .where(User.id == user.id)
+            .values(**update_data)
+            .execution_options(synchronize_session="fetch")
+        )
+        return db.query(User).filter_by(id=user.id).first()
