@@ -1,20 +1,23 @@
-from fastapi import Depends, responses, status
+from uuid import UUID
+from fastapi import Depends, status
 from fastapi.routing import APIRouter
 from fastapi_jwt_auth import AuthJWT
 
 from sqlalchemy.orm import Session
+from src.apps.users.models import User
 
 from src.apps.users.schemas import UserLoginSchema, UserOutputSchema, UserRegisterSchema
 from src.apps.users.services import UserService
-from src.apps.users.jwt_schemas import TokenSchema
+from src.apps.jwt.schemas import TokenSchema
 from src.database.connection import get_db
+from src.dependencies.users import authenticate_user
 
 user_router = APIRouter(prefix="/users")
 
 
-@user_router.get("/")
-def root():
-    return {"Users": "users"}
+# @user_router.get("/")
+# def root():
+#     return {"Users": "users"}
 
 
 @user_router.post(
@@ -48,9 +51,35 @@ def login_user(
     return TokenSchema(access_token=access_token)
 
 
-def get_user():
-    return
+@user_router.get(
+    "/",
+    tags=["users"],
+    dependencies=[Depends(authenticate_user)],
+    status_code=status.HTTP_200_OK,
+    response_model=list[UserOutputSchema],
+)
+def get_users(db: Session = Depends(get_db)) -> list[UserOutputSchema]:
+    return [UserOutputSchema.from_orm(user) for user in db.query(User).all()]
 
 
-def update_user():
-    return
+@user_router.get(
+    "/profile",
+    tags=["users"],
+    status_code=status.HTTP_200_OK,
+    response_model=UserOutputSchema,
+)
+def get_logged_user(
+    request_user: User = Depends(authenticate_user),
+) -> UserOutputSchema:
+    return UserOutputSchema.from_orm(request_user)
+
+
+@user_router.get(
+    "/{user_id}",
+    tags=["users"],
+    dependencies=[Depends(authenticate_user)],
+    status_code=status.HTTP_200_OK,
+    response_model=UserOutputSchema,
+)
+def get_user(user_id: UUID, db: Session = Depends(get_db)) -> UserOutputSchema:
+    return UserOutputSchema.from_orm(db.query(User).filter_by(id=user_id).first())

@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 from src.apps.users.models import User
 from src.apps.users.schemas import UserOutputSchema, UserRegisterSchema
 from src.apps.users.utils import pwd_context
-from src.core.exceptions import AlreadyExists, PasswordMismatch
+from src.core.exceptions import (
+    AlreadyExists,
+    AuthError,
+    InvalidJWTUser,
+    PasswordMismatch,
+)
 
 
 class UserService:
@@ -40,5 +45,5 @@ class UserService:
     def authenticate(cls, email: str, password: str, db: Session) -> User:
         user = db.query(User).filter_by(email=email).first()
         if user is None or not pwd_context.verify(password, user.password):
-            raise Exception
+            raise InvalidJWTUser("No matches with given token")
         return user
