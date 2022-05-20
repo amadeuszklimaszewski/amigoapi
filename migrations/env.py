@@ -8,6 +8,8 @@ from alembic import context
 from src.settings import settings
 
 from src.apps.users.models import User
+from src.apps.recipes.models import Recipe
+from src.apps.reviews.models import Review
 from src.database.connection import Base
 
 # this is the Alembic Config object, which provides
