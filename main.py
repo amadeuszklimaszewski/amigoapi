@@ -3,11 +3,14 @@ from fastapi.responses import JSONResponse
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from src.apps.users.routers import user_router
+
+from src.apps.recipes.routers import recipe_router
 from src.core.exceptions import APIError
 
 app = FastAPI()
 
 app.include_router(user_router)
+app.include_router(recipe_router)
 
 
 @app.get("/")

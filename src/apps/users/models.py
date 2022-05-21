@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import Column, String, Boolean, Date
 from sqlalchemy.dialects.postgresql import UUID
-
+from sqlalchemy.orm import relationship
 from src.database.connection import Base
 
 
@@ -17,3 +17,6 @@ class User(Base):
     birthday = Column(Date)
     password = Column(String)
     is_active = Column(Boolean, default=False)
+
+    recipes = relationship("Recipe", back_populates="user")
+    reviews = relationship("Review", back_populates="user")

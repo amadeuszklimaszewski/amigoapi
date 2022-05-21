@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import select, func
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from src.database.connection import Base
@@ -17,6 +17,9 @@ class Recipe(Base):
     time_required = Column(String)
     servings = Column(Integer)
     description = Column(Text)
+
+    user = relationship("User", back_populates="recipes")
+    reviews = relationship("Review", back_populates="recipe")
 
     review_average = column_property(
         select(func.avg(Review.rating))

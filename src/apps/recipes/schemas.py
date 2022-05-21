@@ -16,5 +16,8 @@ class RecipeOutputSchema(BaseModel):
     time_required: str
     servings: int
     description: str
-    review_average: float
-    review_count: int
+    review_average: float | None
+    review_count: int | None = Field(default=0)
+
+    class Config:
+        orm_mode = True
