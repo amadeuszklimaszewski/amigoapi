@@ -54,7 +54,7 @@ def create_recipe(
 
 
 @recipe_router.put(
-    "/{recipe_id}",
+    "/{recipe_id}/",
     tags=["recipes"],
     status_code=status.HTTP_200_OK,
     response_model=RecipeOutputSchema,
