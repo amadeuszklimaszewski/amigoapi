@@ -14,6 +14,4 @@ A FastAPI culinary recipes website created for learning purposes.
 * PostgreSQL
 
 ## TO DO
-* Reviews routers
-* CRUD for products and reviews
 * Tests
