@@ -13,7 +13,7 @@ from src.dependencies.users import authenticate_user
 
 review_router = APIRouter(prefix="/reviews")
 
-# TODO add filtering by recipe ID
+
 @review_router.get(
     "/{recipe_id}/",
     tags=["reviews"],
@@ -38,6 +38,7 @@ def get_recipes(
 def get_review_by_id(
     recipe_id: UUID, review_id: UUID, db: Session = Depends(get_db)
 ) -> ReviewOutputSchema:
+    validate_recipe(recipe_id=recipe_id, review_id=review_id)
     return ReviewOutputSchema.from_orm(db.query(Review).filter_by(id=review_id).first())
 
 
