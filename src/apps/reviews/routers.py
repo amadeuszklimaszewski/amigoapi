@@ -5,9 +5,11 @@ from sqlalchemy.orm import Session
 from src.apps.reviews.services import ReviewService
 from src.apps.reviews.models import Review
 from src.apps.reviews.schemas import ReviewInputSchema, ReviewOutputSchema
+from src.apps.reviews.utils import validate_recipe
 from src.apps.users.models import User
 from src.database.connection import get_db
 from src.dependencies.users import authenticate_user
+
 
 review_router = APIRouter(prefix="/reviews")
 
@@ -37,7 +39,7 @@ def get_review_by_id(
 
 
 @review_router.post(
-    "/{recipe_id}/{review_id}/",
+    "/{recipe_id}/",
     tags=["reviews"],
     dependencies=[Depends(authenticate_user)],
     status_code=status.HTTP_201_CREATED,
@@ -45,14 +47,13 @@ def get_review_by_id(
 )
 def create_review(
     recipe_id: UUID,
-    review_id: UUID,
     review_input_schema: ReviewInputSchema,
     review_service: ReviewService = Depends(),
     request_user: User = Depends(authenticate_user),
     db: Session = Depends(get_db),
 ) -> ReviewOutputSchema:
     review_schema = review_service.create_review(
-        review_input_schema, review=review_id, user=request_user, db=db
+        schema=review_input_schema, recipe_id=recipe_id, user=request_user, db=db
     )
     return review_schema
 
@@ -68,9 +69,14 @@ def update_review(
     review_id: UUID,
     update_schema: ReviewInputSchema,
     review_service: ReviewService = Depends(),
+    request_user: User = Depends(authenticate_user),
     db: Session = Depends(get_db),
 ) -> ReviewOutputSchema:
+    validate_recipe(recipe_id=recipe_id, review_id=review_id, db=db)
     updated_review = review_service.update_review(
-        review_id, schema=update_schema, db=db
+        schema=update_schema,
+        review_id=review_id,
+        user=request_user,
+        db=db,
     )
     return ReviewOutputSchema.from_orm(updated_review)

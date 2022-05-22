@@ -10,7 +10,7 @@ class ReviewInputSchema(BaseModel):
 
 class ReviewOutputSchema(BaseModel):
     id: UUID
-    tite: str
+    title: str
     user_id: UUID
     recipe_id: UUID
     rating: int
