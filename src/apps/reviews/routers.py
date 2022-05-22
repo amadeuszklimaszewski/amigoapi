@@ -23,7 +23,10 @@ review_router = APIRouter(prefix="/reviews")
 def get_recipes(
     recipe_id: UUID, db: Session = Depends(get_db)
 ) -> list[ReviewOutputSchema]:
-    return [ReviewOutputSchema.from_orm(recipe) for recipe in db.query(Review).all()]
+    return [
+        ReviewOutputSchema.from_orm(recipe)
+        for recipe in db.query(Review).filter_by(recipe_id=recipe_id)
+    ]
 
 
 @review_router.get(
