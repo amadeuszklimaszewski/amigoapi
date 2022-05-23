@@ -21,7 +21,7 @@ user_router = APIRouter(prefix="/users")
 
 
 @user_router.post(
-    "/register",
+    "/register/",
     tags=["users"],
     status_code=status.HTTP_201_CREATED,
     response_model=UserOutputSchema,
@@ -36,7 +36,10 @@ def register_user(
 
 
 @user_router.post(
-    "/login", tags=["users"], status_code=status.HTTP_200_OK, response_model=TokenSchema
+    "/login/",
+    tags=["users"],
+    status_code=status.HTTP_200_OK,
+    response_model=TokenSchema,
 )
 def login_user(
     user_login_schema: UserLoginSchema,
@@ -63,7 +66,7 @@ def get_users(db: Session = Depends(get_db)) -> list[UserOutputSchema]:
 
 
 @user_router.get(
-    "/profile",
+    "/profile/",
     tags=["users"],
     status_code=status.HTTP_200_OK,
     response_model=UserOutputSchema,
@@ -75,7 +78,7 @@ def get_logged_user(
 
 
 @user_router.get(
-    "/{user_id}",
+    "/{user_id}/",
     tags=["users"],
     dependencies=[Depends(authenticate_user)],
     status_code=status.HTTP_200_OK,
@@ -86,7 +89,7 @@ def get_user(user_id: UUID, db: Session = Depends(get_db)) -> UserOutputSchema:
 
 
 @user_router.put(
-    "/profile",
+    "/profile/",
     tags=["users"],
     status_code=status.HTTP_200_OK,
     response_model=UserOutputSchema,

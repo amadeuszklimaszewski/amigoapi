@@ -13,7 +13,11 @@ class DatabaseSettings(BaseSettings):
 
     @property
     def postgres_url(self) -> str:
-        database_name = self.POSTGRES_DATABASE if not self.TEST_MODE else "test"
+        database_name = (
+            self.POSTGRES_DATABASE
+            if not self.TEST_MODE
+            else f"test{self.POSTGRES_DATABASE}"
+        )
 
         return (
             f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
