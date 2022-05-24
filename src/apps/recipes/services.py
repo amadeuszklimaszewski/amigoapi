@@ -31,7 +31,6 @@ class RecipeService:
     def update_recipe(
         cls, recipe_id: UUID, user: User, schema: RecipeInputSchema, db: Session
     ) -> Recipe:
-        print(schema)
         update_data = schema.dict()
         recipe = (
             db.execute(select(Recipe).where(Recipe.id == recipe_id)).scalars().first()
