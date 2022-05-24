@@ -53,3 +53,32 @@ def recipe_in_db(
     user = session.query(User).filter_by(id=register_user.id).first()
     schema = RecipeInputSchema(**recipe_data)
     return RecipeService.create_recipe(schema=schema, user=user, db=session)
+
+
+@pytest.fixture
+def other_user_register_data() -> dict[str, str]:
+    return {
+        "first_name": "other",
+        "last_name": "other",
+        "username": "otheruser",
+        "email": "otheruser@google.com",
+        "password": "test12345",
+        "password2": "test12345",
+        "birthday": "2000-01-01",
+    }
+
+
+@pytest.fixture
+def register_other_user(
+    other_user_register_data: dict[str, str], session: Session
+) -> UserOutputSchema:
+    schema = UserRegisterSchema(**other_user_register_data)
+    return UserService.register_user(schema=schema, db=session)
+
+
+@pytest.fixture
+def other_user_bearer_token_header(
+    register_other_user: UserOutputSchema,
+) -> dict[str, str]:
+    access_token = AuthJWT().create_access_token(subject=register_other_user.json())
+    return {"Authorization": f"Bearer {access_token}"}

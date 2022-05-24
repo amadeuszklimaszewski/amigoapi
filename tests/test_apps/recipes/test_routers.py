@@ -78,18 +78,27 @@ def test_authenticated_user_can_update_recipe(
     assert response.json()["description"] == recipe_update_data["description"]
 
 
-def test_anonymous_user_cannot_create_recipe(
+def test_other_user_cannot_update_recipe(
     client: TestClient,
-    recipe_data: dict[str, str | int],
+    recipe_in_db: RecipeOutputSchema,
+    recipe_update_data: dict[str, str | int],
+    other_user_bearer_token_header: dict[str, str],
     session: Session,
 ):
-    response: Response = client.post("/recipes/", json=recipe_data)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    response: Response = client.put(
+        f"/recipes/{recipe_in_db.id}/",
+        json=recipe_update_data,
+        headers=other_user_bearer_token_header,
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response_body = response.json()
     assert len(response_body) == 1
-    assert response_body["detail"] == "Missing Authorization Header"
-    assert len(session.query(Recipe).all()) == 0
+    assert response_body["detail"] == "User is not owner of the recipe"
+    assert (
+        session.query(Recipe).filter_by(id=recipe_in_db.id).first().title
+        == recipe_in_db.title
+    )
 
 
 def test_anonymous_user_cannot_update_recipe(
