@@ -31,11 +31,3 @@ def register_user(
 def user_bearer_token_header(register_user: UserOutputSchema) -> dict[str, str]:
     access_token = AuthJWT().create_access_token(subject=register_user.json())
     return {"Authorization": f"Bearer {access_token}"}
-
-
-@pytest.fixture
-def user_login_data(user_register_data: dict[str, str]) -> dict[str, str]:
-    return {
-        "email": user_register_data["email"],
-        "password": user_register_data["password"],
-    }

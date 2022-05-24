@@ -16,6 +16,14 @@ def user_update_data() -> dict[str, str]:
     }
 
 
+@pytest.fixture
+def user_login_data(user_register_data: dict[str, str]) -> dict[str, str]:
+    return {
+        "email": user_register_data["email"],
+        "password": user_register_data["password"],
+    }
+
+
 def test_user_can_login(
     client: TestClient,
     register_user: UserOutputSchema,
@@ -89,7 +97,7 @@ def test_authenticated_user_can_update_his_profile(
     session: Session,
 ):
     response: Response = client.put(
-        f"/users/profile/",
+        "/users/profile/",
         headers=user_bearer_token_header,
         json=user_update_data,
     )

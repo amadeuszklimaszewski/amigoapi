@@ -62,10 +62,11 @@ def create_recipe(
 def update_recipe(
     recipe_id: UUID,
     update_schema: RecipeInputSchema,
+    request_user: User = Depends(authenticate_user),
     recipe_service: RecipeService = Depends(),
     db: Session = Depends(get_db),
 ) -> RecipeOutputSchema:
     updated_recipe = recipe_service.update_recipe(
-        recipe_id, schema=update_schema, db=db
+        recipe_id, user=request_user, schema=update_schema, db=db
     )
     return RecipeOutputSchema.from_orm(updated_recipe)
