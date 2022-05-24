@@ -12,6 +12,3 @@ A FastAPI culinary recipes website created for learning purposes.
 * SQLAlchemy + Alembic
 * Docker
 * PostgreSQL
-
-## TO DO
-* Tests
