@@ -8,18 +8,23 @@ services:
     container_name: backend
     networks:
       - nginx_network
+      - postgres_network
     restart: always
     env_file: ./.env
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --workers 4
     depends_on:
       - db
 
   db:
     image: postgres:14.2
     container_name: db
-    restart: always
     env_file: ./.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - postgres_network
+    restart: always
 
   nginx:
     image: nginx:latest
@@ -39,4 +44,6 @@ volumes:
 
 networks:
   nginx_network:
+    driver: bridge
+  postgres_network:
     driver: bridge
