@@ -101,6 +101,19 @@ def test_other_user_cannot_update_recipe(
     )
 
 
+def test_anonymous_user_cannot_create_review(
+    client: TestClient,
+    recipe_data: dict[str, str | int],
+    session: Session,
+):
+    response: Response = client.post("/recipes/", json=recipe_data)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    response_body = response.json()
+    assert len(response_body) == 1
+    assert response_body["detail"] == "Missing Authorization Header"
+
+
 def test_anonymous_user_cannot_update_recipe(
     client: TestClient,
     recipe_in_db: RecipeOutputSchema,

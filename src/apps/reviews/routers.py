@@ -38,7 +38,7 @@ def get_recipes(
 def get_review_by_id(
     recipe_id: UUID, review_id: UUID, db: Session = Depends(get_db)
 ) -> ReviewOutputSchema:
-    validate_recipe(recipe_id=recipe_id, review_id=review_id)
+    validate_recipe(recipe_id=recipe_id, review_id=review_id, db=db)
     return ReviewOutputSchema.from_orm(db.query(Review).filter_by(id=review_id).first())
 
 
