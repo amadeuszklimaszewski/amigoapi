@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, Request
+from fastapi.routing import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
@@ -10,9 +11,13 @@ from src.core.exceptions import APIError
 
 app = FastAPI()
 
-app.include_router(user_router)
-app.include_router(recipe_router)
-app.include_router(review_router)
+router = APIRouter()
+
+router.include_router(user_router)
+router.include_router(recipe_router)
+router.include_router(review_router)
+
+app.include_router(router)
 
 
 @app.get("/")

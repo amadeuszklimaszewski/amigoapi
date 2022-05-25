@@ -4,11 +4,11 @@ postgres-database = postgres
 
 build-dev:
 	-cp -n ./config/.env.template ./.env
-	docker-compose build backend
+	docker-compose build
 
 up-dev:
 	docker-compose run --rm backend bash -c "alembic upgrade head"
-	docker-compose start backend
+	docker-compose up
 
 bash:
 	docker-compose exec backend bash
