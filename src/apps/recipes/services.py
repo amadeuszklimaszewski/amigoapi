@@ -17,31 +17,54 @@ class RecipeService:
             raise InvalidUser("User is not owner of the recipe")
 
     @classmethod
+    def get_recipe_list(
+        cls,
+        session: Session,
+    ):
+        return session.execute(select(Recipe)).scalars().all()
+
+    @classmethod
+    def get_recipe_by_id(
+        cls,
+        recipe_id: UUID,
+        session: Session,
+    ):
+        return (
+            session.execute(select(Recipe).where(Recipe.id == recipe_id))
+            .scalars()
+            .first()
+        )
+
+    @classmethod
     def create_recipe(
-        cls, schema: RecipeInputSchema, user: User, db: Session
-    ) -> RecipeOutputSchema:
+        cls, schema: RecipeInputSchema, user: User, session: Session
+    ) -> Recipe:
         recipe_data = schema.dict()
         new_recipe = Recipe(**recipe_data, user=user)
-        db.add(new_recipe)
-        db.commit()
-        db.refresh(new_recipe)
-        return RecipeOutputSchema.from_orm(new_recipe)
+        session.add(new_recipe)
+        session.commit()
+        session.refresh(new_recipe)
+        return new_recipe
 
     @classmethod
     def update_recipe(
-        cls, recipe_id: UUID, user: User, schema: RecipeInputSchema, db: Session
+        cls, recipe_id: UUID, user: User, schema: RecipeInputSchema, session: Session
     ) -> Recipe:
         update_data = schema.dict()
         recipe = (
-            db.execute(select(Recipe).where(Recipe.id == recipe_id)).scalars().first()
+            session.execute(select(Recipe).where(Recipe.id == recipe_id))
+            .scalars()
+            .first()
         )
         cls._validate_user(user=user, recipe=recipe)
-        db.execute(
+        session.execute(
             update(Recipe)
             .where(Recipe.id == recipe_id)
             .values(**update_data)
             .execution_options(synchronize_session="fetch")
         )
         return (
-            db.execute(select(Recipe).where(Recipe.id == recipe_id)).scalars().first()
+            session.execute(select(Recipe).where(Recipe.id == recipe_id))
+            .scalars()
+            .first()
         )

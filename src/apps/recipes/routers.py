@@ -18,8 +18,14 @@ recipe_router = APIRouter(prefix="/recipes")
     status_code=status.HTTP_200_OK,
     response_model=list[RecipeOutputSchema],
 )
-def get_recipes(db: Session = Depends(get_db)) -> list[RecipeOutputSchema]:
-    return [RecipeOutputSchema.from_orm(recipe) for recipe in db.query(Recipe).all()]
+def get_recipes(
+    recipe_service: RecipeService = Depends(),
+    session: Session = Depends(get_db),
+) -> list[RecipeOutputSchema]:
+    return [
+        RecipeOutputSchema.from_orm(recipe)
+        for recipe in recipe_service.get_recipe_list(session=session)
+    ]
 
 
 @recipe_router.get(
@@ -29,9 +35,12 @@ def get_recipes(db: Session = Depends(get_db)) -> list[RecipeOutputSchema]:
     response_model=RecipeOutputSchema,
 )
 def get_recipe_by_id(
-    recipe_id: UUID, db: Session = Depends(get_db)
+    recipe_id: UUID,
+    recipe_service: RecipeService = Depends(),
+    session: Session = Depends(get_db),
 ) -> RecipeOutputSchema:
-    return RecipeOutputSchema.from_orm(db.query(Recipe).filter_by(id=recipe_id).first())
+    recipe = recipe_service.get_recipe_by_id(recipe_id=recipe_id, session=session)
+    return RecipeOutputSchema.from_orm(recipe)
 
 
 @recipe_router.post(
@@ -45,12 +54,12 @@ def create_recipe(
     recipe_input_schema: RecipeInputSchema,
     recipe_service: RecipeService = Depends(),
     request_user: User = Depends(authenticate_user),
-    db: Session = Depends(get_db),
+    session: Session = Depends(get_db),
 ) -> RecipeOutputSchema:
-    recipe_schema = recipe_service.create_recipe(
-        recipe_input_schema, user=request_user, db=db
+    recipe = recipe_service.create_recipe(
+        recipe_input_schema, user=request_user, session=session
     )
-    return recipe_schema
+    return RecipeOutputSchema.from_orm(recipe)
 
 
 @recipe_router.put(
@@ -64,9 +73,9 @@ def update_recipe(
     update_schema: RecipeInputSchema,
     request_user: User = Depends(authenticate_user),
     recipe_service: RecipeService = Depends(),
-    db: Session = Depends(get_db),
+    session: Session = Depends(get_db),
 ) -> RecipeOutputSchema:
     updated_recipe = recipe_service.update_recipe(
-        recipe_id, user=request_user, schema=update_schema, db=db
+        recipe_id, user=request_user, schema=update_schema, session=session
     )
     return RecipeOutputSchema.from_orm(updated_recipe)

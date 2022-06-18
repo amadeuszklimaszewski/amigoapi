@@ -23,16 +23,16 @@ def user_register_data() -> dict[str, str]:
 
 
 @pytest.fixture
-def register_user(
-    user_register_data: dict[str, str], session: Session
-) -> UserOutputSchema:
+def register_user(user_register_data: dict[str, str], session: Session) -> User:
     schema = UserRegisterSchema(**user_register_data)
-    return UserService.register_user(schema=schema, db=session)
+    return UserService.register_user(schema=schema, session=session)
 
 
 @pytest.fixture
 def user_bearer_token_header(register_user: UserOutputSchema) -> dict[str, str]:
-    access_token = AuthJWT().create_access_token(subject=register_user.json())
+    access_token = AuthJWT().create_access_token(
+        subject=UserOutputSchema.from_orm(register_user).json()
+    )
     return {"Authorization": f"Bearer {access_token}"}
 
 
@@ -52,7 +52,7 @@ def recipe_in_db(
 ) -> RecipeOutputSchema:
     user = session.query(User).filter_by(id=register_user.id).first()
     schema = RecipeInputSchema(**recipe_data)
-    return RecipeService.create_recipe(schema=schema, user=user, db=session)
+    return RecipeService.create_recipe(schema=schema, user=user, session=session)
 
 
 @pytest.fixture
@@ -73,12 +73,14 @@ def register_other_user(
     other_user_register_data: dict[str, str], session: Session
 ) -> UserOutputSchema:
     schema = UserRegisterSchema(**other_user_register_data)
-    return UserService.register_user(schema=schema, db=session)
+    return UserService.register_user(schema=schema, session=session)
 
 
 @pytest.fixture
 def other_user_bearer_token_header(
     register_other_user: UserOutputSchema,
 ) -> dict[str, str]:
-    access_token = AuthJWT().create_access_token(subject=register_other_user.json())
+    access_token = AuthJWT().create_access_token(
+        subject=UserOutputSchema.from_orm(register_other_user).json()
+    )
     return {"Authorization": f"Bearer {access_token}"}

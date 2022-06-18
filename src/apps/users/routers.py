@@ -29,10 +29,10 @@ user_router = APIRouter(prefix="/users")
 def register_user(
     user_register_schema: UserRegisterSchema,
     user_service: UserService = Depends(),
-    db: Session = Depends(get_db),
-):
-    user_schema = user_service.register_user(user_register_schema, db=db)
-    return user_schema
+    session: Session = Depends(get_db),
+) -> UserOutputSchema:
+    user = user_service.register_user(user_register_schema, session=session)
+    return UserOutputSchema.from_orm(user)
 
 
 @user_router.post(
@@ -45,9 +45,9 @@ def login_user(
     user_login_schema: UserLoginSchema,
     auth_jwt: AuthJWT = Depends(),
     user_service: UserService = Depends(),
-    db: Session = Depends(get_db),
-):
-    user = user_service.authenticate(**user_login_schema.dict(), db=db)
+    session: Session = Depends(get_db),
+) -> TokenSchema:
+    user = user_service.authenticate(**user_login_schema.dict(), session=session)
     user_schema = UserOutputSchema.from_orm(user)
     access_token = auth_jwt.create_access_token(subject=user_schema.json())
 
@@ -61,8 +61,14 @@ def login_user(
     status_code=status.HTTP_200_OK,
     response_model=list[UserOutputSchema],
 )
-def get_users(db: Session = Depends(get_db)) -> list[UserOutputSchema]:
-    return [UserOutputSchema.from_orm(user) for user in db.query(User).all()]
+def get_users(
+    user_service: UserService = Depends(),
+    session: Session = Depends(get_db),
+) -> list[UserOutputSchema]:
+    return [
+        UserOutputSchema.from_orm(user)
+        for user in user_service.get_user_list(session=session)
+    ]
 
 
 @user_router.get(
@@ -84,8 +90,13 @@ def get_logged_user(
     status_code=status.HTTP_200_OK,
     response_model=UserOutputSchema,
 )
-def get_user(user_id: UUID, db: Session = Depends(get_db)) -> UserOutputSchema:
-    return UserOutputSchema.from_orm(db.query(User).filter_by(id=user_id).first())
+def get_user(
+    user_id: UUID,
+    user_service: UserService = Depends(),
+    session: Session = Depends(get_db),
+) -> UserOutputSchema:
+    user = user_service.get_user_by_id(user_id=user_id, session=session)
+    return UserOutputSchema.from_orm(user)
 
 
 @user_router.put(
@@ -98,7 +109,7 @@ def update_user(
     update_schema: UserUpdateSchema,
     user: User = Depends(authenticate_user),
     service: UserService = Depends(),
-    db: Session = Depends(get_db),
-):
-    updated_user = service.update_user(user=user, schema=update_schema, db=db)
+    session: Session = Depends(get_db),
+) -> UserOutputSchema:
+    updated_user = service.update_user(user=user, schema=update_schema, session=session)
     return UserOutputSchema.from_orm(updated_user)
