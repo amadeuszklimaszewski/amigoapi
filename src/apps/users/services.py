@@ -1,5 +1,5 @@
 from typing import Any
-from sqlalchemy import update
+from sqlalchemy import update, select
 from sqlalchemy.orm import Session
 
 from src.apps.users.models import User
@@ -33,9 +33,13 @@ class UserService:
         cls._validate_password(user_data=user_data)
         cls._hash_password(user_data=user_data)
 
-        if db.query(User.email).filter_by(email=user_data["email"]).first():
+        if db.execute(
+            select(User.email).where(User.email == user_data["email"])
+        ).first():
             raise AlreadyExists("Email already in use!")
-        if db.query(User.username).filter_by(username=user_data["username"]).first():
+        if db.execute(
+            select(User.username).where(User.username == user_data["username"])
+        ).first():
             raise AlreadyExists("Username already taken!")
 
         new_user = User(**user_data)
@@ -48,7 +52,7 @@ class UserService:
 
     @classmethod
     def authenticate(cls, email: str, password: str, db: Session) -> User:
-        user = db.query(User).filter_by(email=email).first()
+        user = db.execute(select(User).where(User.email == email)).first()
         if user is None or not pwd_context.verify(password, user.password):
             raise InvalidJWTUser("No matches with given token")
         return user

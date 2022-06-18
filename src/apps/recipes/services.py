@@ -42,4 +42,6 @@ class RecipeService:
             .values(**update_data)
             .execution_options(synchronize_session="fetch")
         )
-        return db.query(Recipe).filter_by(id=recipe_id).first()
+        return (
+            db.execute(select(Recipe).where(Recipe.id == recipe_id)).scalars().first()
+        )
