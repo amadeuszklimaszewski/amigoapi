@@ -1,5 +1,5 @@
 import pytest
-from fastapi_jwt_auth import AuthJWT
+from fastapi_another_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from src.apps.users.models import User

@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import Depends, status
 from fastapi.routing import APIRouter
-from fastapi_jwt_auth import AuthJWT
+from fastapi_another_jwt_auth import AuthJWT
 
 from sqlalchemy.orm import Session
 from src.apps.users.models import User
