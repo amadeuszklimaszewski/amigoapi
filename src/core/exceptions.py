@@ -1,33 +1,34 @@
-from fastapi import HTTPException, status
-
-
-class APIError(Exception):
+class APIException(Exception):
     pass
 
 
-class AlreadyExists(APIError):
+class AlreadyExistsException(APIException):
     pass
 
 
-class PasswordMismatch(APIError):
+class DoesNotExistException(APIException):
     pass
 
 
-class AuthError(APIError):
+class PasswordMismatchException(APIException):
     pass
 
 
-class InvalidCredentials(AuthError):
+class AuthException(APIException):
     pass
 
 
-class InvalidJWTUser(AuthError):
+class InvalidCredentialsException(AuthException):
     pass
 
 
-class InvalidUser(AuthError):
+class InvalidJWTUserException(AuthException):
     pass
 
 
-class InvalidRecipe(AuthError):
+class InvalidUserException(AuthException):
+    pass
+
+
+class InvalidRecipeException(AuthException):
     pass

@@ -7,7 +7,7 @@ from src.apps.users.routers import user_router
 from src.apps.recipes.routers import recipe_router
 from src.apps.reviews.routers import review_router
 
-from src.core.exceptions import APIError
+from src.core.exceptions import APIException
 
 app = FastAPI()
 
@@ -25,8 +25,8 @@ def root():
     return {"Amigo": "A culinary recipes website."}
 
 
-@app.exception_handler(APIError)
-def api_error_handler(request: Request, exc: APIError):
+@app.exception_handler(APIException)
+def api_error_handler(request: Request, exc: APIException):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(exc)}
     )

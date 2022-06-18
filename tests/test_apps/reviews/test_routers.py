@@ -41,7 +41,7 @@ def review_in_db(
     user = session.query(User).filter_by(id=register_user.id).first()
     schema = ReviewInputSchema(**review_data)
     return ReviewService.create_review(
-        schema=schema, recipe_id=recipe_in_db.id, user=user, db=session
+        schema=schema, recipe_id=recipe_in_db.id, user=user, session=session
     )
 
 

@@ -3,7 +3,7 @@ import json
 from fastapi import Depends
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
-from src.core.exceptions import InvalidCredentials
+from src.core.exceptions import InvalidCredentialsException
 from src.apps.users.models import User
 from src.database.connection import get_db
 
@@ -16,6 +16,6 @@ def authenticate_user(
     user = db.query(User).filter_by(id=user["id"]).first()
 
     if user is None:
-        raise InvalidCredentials("Invalid credentials provided.")
+        raise InvalidCredentialsException("Invalid credentials provided.")
 
     return user

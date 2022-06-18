@@ -26,10 +26,6 @@ Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 
-# This fixture is the main difference to before. It creates a nested
-# transaction, recreates it when the application code calls session.commit
-# and rolls it back at the end.
-# Based on: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
 @pytest.fixture()
 def session():
     connection = engine.connect()
@@ -51,10 +47,6 @@ def session():
     connection.close()
 
 
-# A fixture for the fastapi test client which depends on the
-# previous session fixture. Instead of creating a new session in the
-# dependency override as before, it uses the one provided by the
-# session fixture.
 @pytest.fixture()
 def client(session):
     def override_get_db():

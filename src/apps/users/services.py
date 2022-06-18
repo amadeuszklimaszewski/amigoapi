@@ -5,15 +5,14 @@ from sqlalchemy.orm import Session
 
 from src.apps.users.models import User
 from src.apps.users.schemas import (
-    UserOutputSchema,
     UserRegisterSchema,
     UserUpdateSchema,
 )
 from src.apps.users.utils import pwd_context
 from src.core.exceptions import (
-    AlreadyExists,
-    InvalidJWTUser,
-    PasswordMismatch,
+    AlreadyExistsException,
+    InvalidJWTUserException,
+    PasswordMismatchException,
 )
 
 
@@ -21,7 +20,7 @@ class UserService:
     @classmethod
     def _validate_password(cls, user_data: dict[str, Any]) -> None:
         if user_data["password"] != user_data["password2"]:
-            raise PasswordMismatch("Passwords do not match")
+            raise PasswordMismatchException("Passwords do not match")
 
     @classmethod
     def _hash_password(cls, user_data: dict[str, Any]) -> None:
@@ -37,11 +36,11 @@ class UserService:
         if session.execute(
             select(User.email).where(User.email == user_data["email"])
         ).first():
-            raise AlreadyExists("Email already in use!")
+            raise AlreadyExistsException("Email already in use!")
         if session.execute(
             select(User.username).where(User.username == user_data["username"])
         ).first():
-            raise AlreadyExists("Username already taken!")
+            raise AlreadyExistsException("Username already taken!")
 
         new_user = User(**user_data)
         new_user.is_active = True
@@ -57,7 +56,7 @@ class UserService:
             session.execute(select(User).where(User.email == email)).scalars().first()
         )
         if user is None or not pwd_context.verify(password, user.password):
-            raise InvalidJWTUser("No matches with given token")
+            raise InvalidJWTUserException("No matches with given token")
         return user
 
     @classmethod

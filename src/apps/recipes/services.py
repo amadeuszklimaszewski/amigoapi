@@ -4,9 +4,9 @@ from uuid import UUID
 from sqlalchemy import update, select
 from sqlalchemy.orm import Session
 
-from src.core.exceptions import InvalidUser
+from src.core.exceptions import InvalidUserException
 from src.apps.recipes.models import Recipe
-from src.apps.recipes.schemas import RecipeInputSchema, RecipeOutputSchema
+from src.apps.recipes.schemas import RecipeInputSchema
 from src.apps.users.models import User
 
 
@@ -14,7 +14,7 @@ class RecipeService:
     @classmethod
     def _validate_user(cls, user: User, recipe: Recipe):
         if recipe.user != user:
-            raise InvalidUser("User is not owner of the recipe")
+            raise InvalidUserException("User is not owner of the recipe")
 
     @classmethod
     def get_recipe_list(
